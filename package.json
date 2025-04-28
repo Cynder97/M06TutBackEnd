@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "description": "backend song application",
   "main": "app.js",
-  "scripts": {
-    "server": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": { "start": "node app.js" },
+  "engines": { "node": "16.x" },
   "author": "",
   "license": "ISC",
   "dependencies": {
