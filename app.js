@@ -3,9 +3,32 @@ var cors = require('cors')
 const app = express()
 const router = express.Router()
 const bodyParser = require('body-parser')
+const jwt = require('jwt-simple')
+const user = require('./modles/users')
 const Song = require('./models/songs')
+const secret = "supersecret"
 app.use(cors())
 app.use(express.json())
+
+router.post("/user", async(req, res) => {
+    if(!req.body.username || !req.body.password){
+        req.status(400).json({error: "Missing username or password"})
+    }
+
+    const newUser = await new User({
+        username: req.body.username,
+        password: req.body.password,
+        status: req.body.status
+    })
+    try{
+        await newUser.save()
+        res.sendStatus(201)
+    }
+    catch(err){
+        res.status(400).send(err)
+    }
+
+})
 
 router.get("/songs", async(req, res) => {
     try{
