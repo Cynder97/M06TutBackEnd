@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "backend song application",
   "main": "app.js",
-  "scripts": { "start": "node app.js" },
-  "engines": { "node": "16.x" },
+  "scripts": { "start": "node app.js",
+  "server": "nodemon app.js" },
+  "engines": { "node": "16.14.2" },
   "author": "",
   "license": "ISC",
   "dependencies": {
