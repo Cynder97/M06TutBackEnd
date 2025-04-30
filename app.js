@@ -51,5 +51,12 @@ router.put(":/id", async(req, res) => {
     }
 })
 
+router.delete("/songs/:id", async(req, res) => {
+    try{
+    Song.deleteOne({_id: req.params.id})
+    }
+    catch{}
+})
+
 app.use("/api", router)
 app.listen(3000)
