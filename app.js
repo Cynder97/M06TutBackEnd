@@ -53,9 +53,12 @@ router.put(":/id", async(req, res) => {
 
 router.delete("/songs/:id", async(req, res) => {
     try{
-    Song.deleteOne({_id: req.params.id})
+    const song = await Song.findById(req.params.id)
+    await Song.deleteOne({ _id: song._id})
     }
-    catch{}
+    catch(err){
+        res.status(400).send(err)
+    }
 })
 
 app.use("/api", router)
