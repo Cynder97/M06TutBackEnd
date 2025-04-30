@@ -55,6 +55,7 @@ router.delete("/songs/:id", async(req, res) => {
     try{
     const song = await Song.findById(req.params.id)
     await Song.deleteOne({ _id: song._id})
+    res.sendStatus(204)
     }
     catch(err){
         res.status(400).send(err)
