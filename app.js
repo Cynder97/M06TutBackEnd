@@ -4,7 +4,7 @@ const app = express()
 const router = express.Router()
 const bodyParser = require('body-parser')
 const jwt = require('jwt-simple')
-const user = require('./modles/users')
+const User = require('./models/users')
 const Song = require('./models/songs')
 const secret = "supersecret"
 app.use(cors())
@@ -29,6 +29,53 @@ router.post("/user", async(req, res) => {
     }
 
 })
+
+router.post("/auth", async(req, res) => {
+    if(!req.body.username || req.body.password){
+        res.status(400).json({error: "Missing username or password"})
+        return
+    }
+
+    let user = await User.findOne({username : req.body.username})
+        if(err){
+            res.status(400).send(err)
+        }
+        else if(!user){
+            res.status(401).json({error: "Username or password are incorrect"})
+        }
+        else{
+            if(user.password != req.body.password){
+                res.status(401).json({error: "Username or password are incorrect"})
+            }
+            else{
+                username2 = user.username
+                const token = jwt.encode({username: user.username},secret)
+                const auth = 1
+
+                res.json({
+                    username2,
+                    token:token,
+                    auth:auth
+                })
+            }
+        }
+    })
+
+    router.get("/status", async(req, res) => {
+        if(!req.headers["x-auth"]){
+            return res.status(401).json({error: "Missing X-Auth"})
+        }
+        const token = req.headers["x-auth"]
+        try{
+            const decoded = jwt.decode(token,secret)
+            let users = User.find({}, "username status")
+            res.json(users)
+        }
+        catch(ex){
+            res.status(401).json({error: "invalid jwt"})
+        }
+    
+    })
 
 router.get("/songs", async(req, res) => {
     try{
