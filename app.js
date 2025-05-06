@@ -110,7 +110,7 @@ router.post("/songs", async(req, res) => {
     }
 })
 
-router.put(":/id", async(req, res) => {
+router.put("/songs/:id", async(req, res) => {
     try{
         const song = req.body
         await Song.updateOne({_id : req.params.id,song})
