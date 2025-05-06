@@ -30,26 +30,33 @@ router.post("/user", async(req, res) => {
 
 })
 
-router.post("/auth", async(req, res) => {
+router.post("/auth", async (req, res) => {
     if (!req.body.username || !req.body.password) {
-        res.status(400).json({error: "Missing username or password"})
-        return
+        return res.status(400).json({ error: "Missing username or password" });
     }
 
     try {
         let user = await User.findOne({ username: req.body.username });
-    
-        if (!user || user.password !== req.body.password) {
+
+        if (!user) {
+            console.log("User not found in database:", req.body.username);
             return res.status(401).json({ error: "Username or password are incorrect" });
         }
-    
+
+        console.log("User found:", user);
+
+        if (user.password !== req.body.password) {
+            console.log("Password mismatch for user:", req.body.username);
+            return res.status(401).json({ error: "Username or password are incorrect" });
+        }
+
         const token = jwt.encode({ username: user.username }, secret);
         res.json({ username: user.username, token: token, auth: 1 });
     } catch (err) {
-        res.status(400).json({ error: "Database error", details: err.message });
+        res.status(500).json({ error: "Database error", details: err.message });
     }
-    
-    })
+});
+
 
     router.get("/status", async(req, res) => {
         if(!req.headers["x-auth"]){
