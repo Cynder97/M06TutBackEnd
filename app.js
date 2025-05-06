@@ -12,7 +12,7 @@ app.use(express.json())
 
 router.post("/user", async(req, res) => {
     if(!req.body.username || !req.body.password){
-        req.status(400).json({error: "Missing username or password"})
+        res.status(400).json({ error: "Missing username or password" });
     }
 
     const newUser = await new User({
@@ -31,34 +31,24 @@ router.post("/user", async(req, res) => {
 })
 
 router.post("/auth", async(req, res) => {
-    if(!req.body.username || req.body.password){
+    if (!req.body.username || !req.body.password) {
         res.status(400).json({error: "Missing username or password"})
         return
     }
 
-    let user = await User.findOne({username : req.body.username})
-        if(err){
-            res.status(400).send(err)
+    try {
+        let user = await User.findOne({ username: req.body.username });
+    
+        if (!user || user.password !== req.body.password) {
+            return res.status(401).json({ error: "Username or password are incorrect" });
         }
-        else if(!user){
-            res.status(401).json({error: "Username or password are incorrect"})
-        }
-        else{
-            if(user.password != req.body.password){
-                res.status(401).json({error: "Username or password are incorrect"})
-            }
-            else{
-                username2 = user.username
-                const token = jwt.encode({username: user.username},secret)
-                const auth = 1
-
-                res.json({
-                    username2,
-                    token:token,
-                    auth:auth
-                })
-            }
-        }
+    
+        const token = jwt.encode({ username: user.username }, secret);
+        res.json({ username: user.username, token: token, auth: 1 });
+    } catch (err) {
+        res.status(400).json({ error: "Database error", details: err.message });
+    }
+    
     })
 
     router.get("/status", async(req, res) => {
@@ -68,7 +58,7 @@ router.post("/auth", async(req, res) => {
         const token = req.headers["x-auth"]
         try{
             const decoded = jwt.decode(token,secret)
-            let users = User.find({}, "username status")
+            const users = await User.find({}, "username status")
             res.json(users)
         }
         catch(ex){
